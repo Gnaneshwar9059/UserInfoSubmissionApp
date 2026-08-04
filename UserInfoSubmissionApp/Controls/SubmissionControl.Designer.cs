@@ -64,8 +64,8 @@ partial class SubmissionControl
         dtpDateOfBirth = new DateTimePicker
         {
             Format = DateTimePickerFormat.Short,
-            MaxDate = DateTime.Today.AddDays(-1),
-            Value = DateTime.Today.AddYears(-18)
+            MaxDate = DateTime.Today,
+            Value = DateTime.Today
         };
 
 

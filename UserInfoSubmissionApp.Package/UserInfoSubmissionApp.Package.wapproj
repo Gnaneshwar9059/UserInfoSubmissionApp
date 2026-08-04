@@ -57,7 +57,6 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
     <EntryPointProjectUniqueName>..\UserInfoSubmissionApp\UserInfoSubmissionApp.csproj</EntryPointProjectUniqueName>
-    <EntryPointProjectConfiguration>Release</EntryPointProjectConfiguration>
     <EntryPointProjectPlatform>x64</EntryPointProjectPlatform>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <PackageCertificateThumbprint>C868674B02422050643D6929A2B43A394A9BDF01</PackageCertificateThumbprint>

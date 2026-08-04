@@ -12,6 +12,7 @@ public partial class SubmissionControl : UserControl
     private readonly ISubmissionService _submissionService;
 
     public event EventHandler? SubmissionSaved;
+    private bool _dobSelected;
 
     public SubmissionControl(LoggedInUser loggedInUser, ISubmissionService submissionService)
     {
@@ -21,19 +22,28 @@ public partial class SubmissionControl : UserControl
         InitializeComponent();
         PopulateStaticDropdowns();
 
-        dtpDateOfBirth.Value = DateTime.Today.AddYears(-18);
-        txtAge.Text = dtpDateOfBirth.Value.CalculateAge().ToString();
+
+        _dobSelected = false;
+
+        dtpDateOfBirth.Format = DateTimePickerFormat.Custom;
+        dtpDateOfBirth.CustomFormat = " ";
+        txtAge.Text = string.IsNullOrEmpty(dtpDateOfBirth.Text) ? "" : dtpDateOfBirth.Value.CalculateAge().ToString();
 
         dtpDateOfBirth.ValueChanged += DtpDateOfBirth_ValueChanged;
         cmbCountry.SelectedIndexChanged += CmbCountry_SelectedIndexChanged;
         btnSave.Click += BtnSave_ClickAsync;
+
+
     }
 
     private void DtpDateOfBirth_ValueChanged(object? sender, EventArgs e)
     {
+        _dobSelected = true;
+
+        dtpDateOfBirth.CustomFormat = "dd-MM-yyyy";
+
         txtAge.Text = dtpDateOfBirth.Value.CalculateAge().ToString();
     }
-
     private void CmbCountry_SelectedIndexChanged(object? sender, EventArgs e)
     {
         cmbState.Items.Clear();
@@ -149,9 +159,12 @@ public partial class SubmissionControl : UserControl
             valid = false;
         }
 
-        if (dtpDateOfBirth.Value.Date >= DateTime.Today)
+        if (!_dobSelected)
         {
-            errorProvider.SetError(dtpDateOfBirth, "Must be in the past");
+            errorProvider.SetError(
+                dtpDateOfBirth,
+                "Date of Birth is required");
+
             valid = false;
         }
 
@@ -203,8 +216,14 @@ public partial class SubmissionControl : UserControl
         cmbCountry.SelectedIndex = -1;
         cmbState.Items.Clear();
 
-        dtpDateOfBirth.Value = DateTime.Today.AddYears(-18);
-        txtAge.Text = dtpDateOfBirth.Value.CalculateAge().ToString();
+        _dobSelected = false;
+
+        //dtpDateOfBirth.Value = DateTime.Today;
+
+        dtpDateOfBirth.Format = DateTimePickerFormat.Custom;
+        dtpDateOfBirth.CustomFormat = " ";
+
+        txtAge.Clear();
 
         errorProvider.Clear();
     }
