@@ -22,7 +22,8 @@ jobs:
       uses: microsoft/setup-msbuild@v2
 
     - name: Restore Project NuGet Dependencies
-      run: dotnet restore UserInfoSubmissionApp.slnx
+      run: dotnet restore UserInfoSubmissionApp.slnx --runtime win-x64
+
 
     - name: Decode and Install Signing Certificate
       shell: powershell
