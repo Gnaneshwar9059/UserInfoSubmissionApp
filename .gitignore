@@ -1,0 +1,39 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+bin/
+obj/
+
+# Rider
+.idea/
+
+# NuGet
+packages/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Certificates
+*.pfx
+# Packaging output
+**/AppPackages/
+
+
+# Visual Studio Cache & Build Outputs
+.vs/
+[Bb]in/
+[Oo]bj/
+AppPackages/
+_Backup/
+*.appxsym
+*.assets.cache
