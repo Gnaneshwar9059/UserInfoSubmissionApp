@@ -1,0 +1,56 @@
+name: Generate and Release MSIX Installer
+
+on:
+  push:
+    branches:
+      - main # Triggers automatically on every normal commit push to the main branch
+      - '*Yaml*' # Triggers on any branch that contains "Yaml" 
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Source Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK Environment
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Add MSBuild to System Path
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore Project NuGet Dependencies
+      run: dotnet restore UserInfoSubmissionApp.slnx --runtime win-x64
+
+
+    - name: Decode and Install Signing Certificate
+      shell: powershell
+      run: |
+        $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.BASE64_CERTIFICATE }}")
+        [IO.File]::WriteAllBytes("${{ github.workspace }}\signing_cert.pfx", $pfx_cert_byte)
+
+    - name: Compile and Package MSIX Container
+      run: |
+        msbuild "UserInfoSubmissionApp.Package/UserInfoSubmissionApp.Package.wapproj" `
+          /p:Configuration=Release `
+          /p:Platform=x64 `
+          /p:UapAppxPackageBuildMode=SideloadOnly `
+          /p:AppxPackageSigningEnabled=true `
+          /p:PackageCertificateKeyFile="${{ github.workspace }}\signing_cert.pfx" `
+          /p:PackageCertificatePassword="${{ secrets.CERTIFICATE_PASSWORD }}"
+
+    - name: Publish MSIX Bundle to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: "latest-build" # Reuses this exact tag name every time
+        name: "Continuous Integration Build"
+        body: "Automated installer generated from the latest commit push."
+        prerelease: true
+        files: |
+          UserInfoSubmissionApp.Package/AppPackages/**/*.msix
+          LICENSE.txt
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
