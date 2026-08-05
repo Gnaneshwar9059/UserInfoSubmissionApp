@@ -30,7 +30,19 @@ jobs:
       shell: powershell
       run: |
         $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.BASE64_CERTIFICATE }}")
-        [IO.File]::WriteAllBytes("${{ github.workspace }}\signing_cert.pfx", $pfx_cert_byte)
+        $cert_path = "${{ github.workspace }}\signing_cert.pfx"
+        [IO.File]::WriteAllBytes($cert_path, $pfx_cert_byte)
+
+        $password = ConvertTo-SecureString "${{ secrets.CERTIFICATE_PASSWORD }}" -AsPlainText -Force
+        $flags = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::"MachineKeySet,PersistKeySet,Exportable"
+        
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $cert.Import($cert_path, "${{ secrets.CERTIFICATE_PASSWORD }}", $flags)
+
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store("My", "CurrentUser")
+        $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::"ReadWrite")
+        $store.Add($cert)
+        $store.Close()
 
     - name: Compile and Package MSIX Container
       run: |
