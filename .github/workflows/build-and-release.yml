@@ -29,20 +29,16 @@ jobs:
     - name: Decode and Install Signing Certificate
       shell: powershell
       run: |
+        # 1. Convert the Base64 repository secret text back into a physical PFX file
         $pfx_cert_byte = [System.Convert]::FromBase64String("${{ secrets.BASE64_CERTIFICATE }}")
         $cert_path = "${{ github.workspace }}\signing_cert.pfx"
         [IO.File]::WriteAllBytes($cert_path, $pfx_cert_byte)
 
-        $password = ConvertTo-SecureString "${{ secrets.CERTIFICATE_PASSWORD }}" -AsPlainText -Force
-        $flags = [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::"MachineKeySet,PersistKeySet,Exportable"
-        
-        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
-        $cert.Import($cert_path, "${{ secrets.CERTIFICATE_PASSWORD }}", $flags)
+        # 2. Convert your plain text password secret into a secure Windows string object
+        $secure_password = ConvertTo-SecureString "${{ secrets.CERTIFICATE_PASSWORD }}" -AsPlainText -Force
 
-        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store("My", "CurrentUser")
-        $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::"ReadWrite")
-        $store.Add($cert)
-        $store.Close()
+        # 3. Use the native Windows command to import the key cleanly into the CurrentUser Personal Store
+        Import-PfxCertificate -FilePath $cert_path -CertStoreLocation "Cert:\CurrentUser\My" -Password $secure_password -Exportable
 
     - name: Compile and Package MSIX Container
       run: |
