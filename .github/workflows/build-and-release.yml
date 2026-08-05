@@ -59,6 +59,5 @@ jobs:
         prerelease: true
         files: |
           UserInfoSubmissionApp.Package/AppPackages/**/*.msix
-          LICENSE.txt
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
