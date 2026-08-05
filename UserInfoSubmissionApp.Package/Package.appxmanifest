@@ -10,10 +10,10 @@
   <Identity
     Name="d2f4f567-26ae-424d-a462-92def204406d"
     Publisher="CN=Gnani"
-    Version="1.0.4.0" />
+    Version="1.0.7.0" />
 
   <Properties>
-    <DisplayName>UserInfoSubmissionApp.Package</DisplayName>
+    <DisplayName>User Information Submission App</DisplayName>
     <PublisherDisplayName>gnane</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
@@ -32,7 +32,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="UserInfoSubmissionApp.Package"
+        DisplayName="User Information Submission"
         Description="UserInfoSubmissionApp.Package"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
